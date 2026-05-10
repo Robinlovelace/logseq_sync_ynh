@@ -11,7 +11,7 @@ source /usr/share/yunohost/helpers
 # LOAD SETTINGS
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
+export app=$YNH_APP_INSTANCE_NAME
 
 export domain="${YNH_APP_ARG_DOMAIN:-sync.lovelaces.org}"
 export path_url="${YNH_APP_ARG_PATH:-/}"
