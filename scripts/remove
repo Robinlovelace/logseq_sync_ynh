@@ -40,7 +40,7 @@ rm -rf "/var/www/$app"
 #=================================================
 
 if [[ -n "$domain" ]]; then
-    ynh_webpath_unregister --domain="$domain" --path="$path"
+    ynh_webpath_unregister "$domain" "$path"
 fi
 
 #=================================================
