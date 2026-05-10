@@ -18,8 +18,12 @@
     "integration": {
         "yunohost": ">= 11.2",
         "architectures": "all",
-        "ram": "512MB",
-        "disk": "1GB"
+        "ram": {
+            "runtime": "512MB"
+        },
+        "disk": {
+            "runtime": "1GB"
+        }
     },
     "categories": ["office", "synchronization"],
     "multi_instance": true,
