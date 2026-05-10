@@ -13,7 +13,20 @@
         "email": "robin@lovelace.org"
     },
     "license": "AGPL-3.0",
-    "packaging_format": 1,
+    "packaging_format": 2,
+    "version": "0.1.0~ynh1",
+    "integration": {
+        "yunohost": ">= 11.2",
+        "architectures": "all",
+        "ram": {
+            "build": "256M",
+            "runtime": "512M"
+        },
+        "disk": {
+            "build": "1G",
+            "runtime": "1G"
+        }
+    },
     "categories": ["office", "synchronization"],
     "multi_instance": true,
     "services": ["nginx", "docker"],

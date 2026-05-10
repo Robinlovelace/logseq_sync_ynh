@@ -13,19 +13,18 @@ source /usr/share/yunohost/helpers
 
 app=$YNH_APP_INSTANCE_NAME
 
-# For Packaging Format 1, arguments are passed as $1, $2, etc.
-# For Packaging Format 2, we use ynh_handle_getopts_args or YNH_APP_ARG_...
-# Let's try to handle both.
+# Debug: Print all env vars starting with YNH
+env | grep YNH_ || true
 
-domain="${1:-${YNH_APP_ARG_DOMAIN:-}}"
-path="${2:-${YNH_APP_ARG_PATH:-}}"
-is_public="${3:-${YNH_APP_ARG_IS_PUBLIC:-}}"
-auth_provider="${4:-${YNH_APP_ARG_AUTH_PROVIDER:-}}"
-secret_key="${5:-${YNH_APP_ARG_SECRET_KEY:-}}"
+domain="${YNH_APP_ARG_DOMAIN:-}"
+path="${YNH_APP_ARG_PATH:-}"
+is_public="${YNH_APP_ARG_IS_PUBLIC:-}"
+auth_provider="${YNH_APP_ARG_AUTH_PROVIDER:-}"
+secret_key="${YNH_APP_ARG_SECRET_KEY:-}"
 
 # Check if required variables are empty
 if [[ -z "$domain" || -z "$path" ]]; then
-    ynh_print_err --message="Domain or path not provided (domain=$domain, path=$path)"
+    ynh_print_err --message="Domain or path not provided (YNH_APP_ARG_DOMAIN=$YNH_APP_ARG_DOMAIN, domain=$domain)"
     exit 1
 fi
 
