@@ -1,0 +1,81 @@
+#!/bin/bash
+
+#=================================================
+# APP UPGRADE SCRIPT
+#=================================================
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+# For upgrades, settings are already in the database
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+port=$(ynh_app_setting_get --app=$app --key=port)
+auth_provider=$(ynh_app_setting_get --app=$app --key=auth_provider)
+# We don't change the secret_key during upgrade unless specified,
+# but we need it for the Nginx config replacement.
+# Let's assume it's stored or we re-use what's in the manifest if provided.
+secret_key="${YNH_APP_ARG_SECRET_KEY:-testing123}"
+
+#=================================================
+# PREPARE DATA DIRECTORY
+#=================================================
+
+data_dir="/var/www/$app/data"
+mkdir -p "$data_dir"
+chown -R 1000:1000 "$data_dir"
+chmod -R 775 "$data_dir"
+
+#=================================================
+# CONFIGURE DOCKER-COMPOSE
+#=================================================
+
+# Copy latest docker-compose.yml and Dockerfile
+cp ../docker-compose.yml "/var/www/$app/docker-compose.yml"
+cp ../Dockerfile "/var/www/$app/Dockerfile"
+
+# Update .env file
+allow_unverified="false"
+if [[ "$auth_provider" == "secret-key" ]]; then
+    allow_unverified="true"
+fi
+
+cat > "/var/www/$app/.env" <<EOF
+DATA_DIR=$data_dir
+PORT=$port
+ALLOW_UNVERIFIED=$allow_unverified
+OIDC_ISSUER=
+OIDC_CLIENT_ID=
+EOF
+
+#=================================================
+# RESTART DOCKER CONTAINER (Triggers build)
+#=================================================
+
+ynh_print_info --message="Building and restarting Logseq Sync Server via Docker..."
+(cd "/var/www/$app" && docker-compose up -d --build)
+
+#=================================================
+# CONFIGURE NGINX
+#=================================================
+
+ynh_add_nginx_config
+ynh_replace_string "__SECRET_KEY__" "$secret_key" "/etc/nginx/conf.d/$domain.d/$app.conf"
+
+#=================================================
+# RELOAD SERVICES
+#=================================================
+
+systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Upgrade of $app successful"
