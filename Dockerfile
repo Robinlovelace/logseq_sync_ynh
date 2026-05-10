@@ -1,8 +1,9 @@
 # Build stage
-FROM node:20-slim AS builder
+FROM eclipse-temurin:21-jdk-jammy AS builder
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y git curl openjdk-21-jdk-headless
+RUN apt-get update && apt-get install -y git curl
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
 RUN npm install -g pnpm
 
 # Install Clojure
