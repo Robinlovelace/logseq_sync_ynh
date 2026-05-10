@@ -74,7 +74,7 @@
                 "ask": {
                     "en": "Secret Key (if using Secret Key auth)"
                 },
-                "default": ""
+                "default": "none"
             }
         ]
     }
