@@ -5,6 +5,9 @@ FROM node:20-slim AS builder
 RUN apt-get update && apt-get install -y git curl default-jdk-headless
 RUN npm install -g pnpm
 
+# Install Clojure
+RUN curl -L https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh | bash
+
 # Clone Logseq and build db-sync node adapter
 WORKDIR /src
 RUN git clone --depth 1 https://github.com/logseq/logseq.git .
