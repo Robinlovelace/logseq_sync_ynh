@@ -2,7 +2,7 @@
 FROM node:20-slim AS builder
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y git curl default-jdk-headless
+RUN apt-get update && apt-get install -y git curl openjdk-21-jdk-headless
 RUN npm install -g pnpm
 
 # Install Clojure
