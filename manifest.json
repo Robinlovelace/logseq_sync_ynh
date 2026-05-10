@@ -1,0 +1,68 @@
+{
+    "name": "Logseq Sync Server",
+    "id": "logseq_sync",
+    "description": {
+        "en": "Self-hosted sync server for Logseq DB version."
+    },
+    "developer": {
+        "name": "Logseq",
+        "website": "https://logseq.com"
+    },
+    "maintainer": {
+        "name": "robinlovelace",
+        "email": "robin@lovelace.org"
+    },
+    "license": "AGPL-3.0",
+    "packaging_format": 1,
+    "categories": ["office", "synchronization"],
+    "multi_instance": true,
+    "services": ["nginx", "docker"],
+    "arguments": {
+        "install": [
+            {
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain for Logseq Sync"
+                },
+                "example": "sync.domain.tld"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Logseq Sync"
+                },
+                "default": "/"
+            },
+            {
+                "name": "is_public",
+                "type": "boolean",
+                "ask": {
+                    "en": "Is this app public?"
+                },
+                "default": false
+            },
+            {
+                "name": "auth_provider",
+                "type": "choice",
+                "choices": {
+                    "oidc": "OIDC (requires YunoHost OIDC app)",
+                    "secret-key": "Secret Key (Single User Bypass)"
+                },
+                "ask": {
+                    "en": "Authentication Provider"
+                },
+                "default": "secret-key"
+            },
+            {
+                "name": "secret_key",
+                "type": "password",
+                "ask": {
+                    "en": "Secret Key (if using Secret Key auth)"
+                },
+                "default": ""
+            }
+        ]
+    }
+}
