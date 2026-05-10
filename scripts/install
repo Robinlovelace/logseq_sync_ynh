@@ -13,11 +13,14 @@ source /usr/share/yunohost/helpers
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$YNH_APP_ARG_DOMAIN
-path=$YNH_APP_ARG_PATH
-is_public=$YNH_APP_ARG_IS_PUBLIC
-auth_provider=$YNH_APP_ARG_AUTH_PROVIDER
-secret_key=$YNH_APP_ARG_SECRET_KEY
+# Parse arguments
+ynh_handle_getopts_args "$@"
+
+# Check if required variables are empty
+if [[ -z "$domain" || -z "$path" ]]; then
+    ynh_print_err --message="Domain or path not provided (domain=$domain, path=$path)"
+    exit 1
+fi
 
 #=================================================
 # CHECK IF DOMAIN/PATH ARE AVAILABLE
