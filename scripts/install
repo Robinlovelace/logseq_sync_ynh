@@ -50,11 +50,17 @@ cp ../docker-compose.yml "/var/www/$app/docker-compose.yml"
 cp ../Dockerfile "/var/www/$app/Dockerfile"
 
 # Create .env file for docker-compose
+allow_unverified="false"
+if [[ "$auth_provider" == "secret-key" ]]; then
+    allow_unverified="true"
+fi
+
 cat > "/var/www/$app/.env" <<EOF
-AUTH_PROVIDER=$auth_provider
-SECRET_KEY=$secret_key
 DATA_DIR=$data_dir
 PORT=$port
+ALLOW_UNVERIFIED=$allow_unverified
+OIDC_ISSUER=
+OIDC_CLIENT_ID=
 EOF
 
 # If OIDC is selected, we might need more info, but for now we'll assume the user
