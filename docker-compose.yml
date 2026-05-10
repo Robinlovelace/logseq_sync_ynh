@@ -1,7 +1,7 @@
 version: '3'
 services:
   logseq-sync:
-    image: logseq/logseq-sync-server:latest
+    image: ghcr.io/yshalsager/logseq-sync-server:latest
     container_name: logseq_sync
     restart: always
     environment:

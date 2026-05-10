@@ -23,7 +23,7 @@ secret_key="${YNH_APP_ARG_SECRET_KEY:-testing123}"
 # CHECK IF DOMAIN/PATH ARE AVAILABLE
 #=================================================
 
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
+ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 
 #=================================================
 # PREPARE DATA DIRECTORY
