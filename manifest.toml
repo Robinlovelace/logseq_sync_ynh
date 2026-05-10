@@ -1,0 +1,48 @@
+name = "Logseq Sync Server"
+id = "logseq_sync"
+description.en = "Self-hosted sync server for Logseq DB version."
+version = "0.1.0~ynh1"
+license = "AGPL-3.0"
+maintainer.name = "robinlovelace"
+maintainer.email = "robin@lovelace.org"
+developer.name = "Logseq"
+developer.website = "https://logseq.com"
+
+[integration]
+yunohost = ">= 11.2"
+architectures = "all"
+
+[integration.ram]
+build = "256M"
+runtime = "512M"
+
+[integration.disk]
+build = "1G"
+runtime = "1G"
+
+[arguments.install.domain]
+type = "domain"
+ask.en = "Choose a domain for Logseq Sync"
+example = "sync.domain.tld"
+
+[arguments.install.path]
+type = "path"
+ask.en = "Choose a path for Logseq Sync"
+default = "/"
+
+[arguments.install.is_public]
+type = "boolean"
+ask.en = "Is this app public?"
+default = false
+
+[arguments.install.auth_provider]
+type = "choice"
+choices.oidc = "OIDC (requires YunoHost OIDC app)"
+choices.secret-key = "Secret Key (Single User Bypass)"
+ask.en = "Authentication Provider"
+default = "secret-key"
+
+[arguments.install.secret_key]
+type = "password"
+ask.en = "Secret Key (if using Secret Key auth)"
+default = ""
