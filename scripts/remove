@@ -40,7 +40,14 @@ rm -rf "/var/www/$app"
 #=================================================
 
 if [[ -n "$domain" ]]; then
-    ynh_app_unregister_urls --app=$app --domain=$domain --path_url=$path_url
+    # Try multiple helper names or direct command
+    if type ynh_app_unregister_urls >/dev/null 2>&1; then
+        ynh_app_unregister_urls --app=$app --domain=$domain --path_url=$path_url
+    elif type ynh_webpath_unregister >/dev/null 2>&1; then
+        ynh_webpath_unregister --app=$app --domain=$domain --path_url=$path_url
+    else
+        yunohost app unregister-url "$app" "$domain" "$path_url" || true
+    fi
 fi
 
 #=================================================
