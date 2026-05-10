@@ -27,7 +27,7 @@ if [[ -z "$path" ]]; then path="/"; fi
 # CHECK IF DOMAIN/PATH ARE AVAILABLE
 #=================================================
 
-ynh_app_register_urls --domain="$domain" --path="$path"
+ynh_webpath_register --domain="$domain" --path="$path"
 
 #=================================================
 # PREPARE DATA DIRECTORY
