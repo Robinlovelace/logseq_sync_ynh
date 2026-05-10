@@ -36,9 +36,10 @@ chmod -R 775 "$data_dir"
 # CONFIGURE DOCKER-COMPOSE
 #=================================================
 
-# Copy latest docker-compose.yml and Dockerfile
+# Copy latest docker-compose.yml, Dockerfile and mise.toml
 cp ../docker-compose.yml "/var/www/$app/docker-compose.yml"
 cp ../Dockerfile "/var/www/$app/Dockerfile"
+cp ../mise.toml "/var/www/$app/mise.toml"
 
 # Update .env file
 allow_unverified="false"
@@ -49,6 +50,7 @@ fi
 cat > "/var/www/$app/.env" <<EOF
 DATA_DIR=$data_dir
 PORT=$port
+DOMAIN=$domain
 ALLOW_UNVERIFIED=$allow_unverified
 OIDC_ISSUER=
 OIDC_CLIENT_ID=
@@ -67,6 +69,7 @@ ynh_print_info --message="Building and restarting Logseq Sync Server via Docker.
 
 ynh_add_nginx_config
 ynh_replace_string "__SECRET_KEY__" "$secret_key" "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_replace_string "__DOMAIN__" "$domain" "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # RELOAD SERVICES

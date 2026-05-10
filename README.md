@@ -2,12 +2,16 @@
 
 Self-hosted synchronization server for the Logseq DB (Database) version.
 
+Built on the excellent prior work by [yshalsager/logseq-selfhost](https://github.com/yshalsager/logseq-selfhost).
+
 ## Features
 
-- Uses official `logseq/logseq-sync-server` Docker image.
+- Uses an improved multi-stage Docker build based on `yshalsager`'s community images.
+- Managed toolchain via `mise` (Node 24, Java 21, Clojure 1.12).
 - Supports WebSocket (WSS) for real-time synchronization.
 - Data persistence in `/var/www/logseq_sync/data`.
-- Authentication via OIDC or Secret Key bypass.
+- Authentication via OIDC or Secret Key bypass (with easy query parameter support).
+- Automatic "Dummy" OIDC configuration to support the Logseq Beta "Login" button.
 
 ## Prerequisites
 

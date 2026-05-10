@@ -5,12 +5,14 @@ services:
     container_name: logseq_sync
     restart: always
     environment:
-      - DB_SYNC_PORT=3000
-      - DB_SYNC_DATA_DIR=/data
+      - DB_SYNC_PORT=8787
+      - DB_SYNC_DATA_DIR=/app/data
+      - DB_SYNC_BASE_URL=https://${DOMAIN}
+      - DB_SYNC_ALLOW_UNVERIFIED_JWT_CLAIMS=${ALLOW_UNVERIFIED}
+      # For OIDC support, user can set these manually in .env
       - COGNITO_ISSUER=${OIDC_ISSUER}
       - COGNITO_CLIENT_ID=${OIDC_CLIENT_ID}
-      - DB_SYNC_ALLOW_UNVERIFIED_JWT_CLAIMS=${ALLOW_UNVERIFIED}
     volumes:
-      - ${DATA_DIR}:/data
+      - ${DATA_DIR}:/app/data
     ports:
-      - ${PORT}:3000
+      - ${PORT}:8787

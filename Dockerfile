@@ -1,41 +1,63 @@
-# Build stage
-FROM eclipse-temurin:21-jdk-jammy AS builder
+# syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
+FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b AS build
+ARG LOGSEQ_REF=master
+ARG MISE_VERSION=v2026.5.1
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y git curl
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
-RUN npm install -g pnpm
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH=/root/.local/bin:$PATH
+ENV MISE_YES=1
 
-# Install Clojure
-RUN curl -L https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh | bash
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    bash \
+    ca-certificates \
+    curl \
+    git \
+    xz-utils \
+  && rm -rf /var/lib/apt/lists/*
 
-# Clone Logseq and build db-sync node adapter
+RUN curl -fsSL https://mise.run | MISE_VERSION="${MISE_VERSION}" sh
+
+WORKDIR /tooling
+COPY mise.toml /tooling/mise.toml
+RUN mise trust /tooling/mise.toml && mise install
+
 WORKDIR /src
-RUN git clone --depth 1 https://github.com/logseq/logseq.git .
+RUN git init . \
+  && git remote add origin https://github.com/logseq/logseq.git \
+  && git fetch --depth 1 origin "${LOGSEQ_REF}" \
+  && git checkout --detach FETCH_HEAD
+
+COPY mise.toml /src/mise.toml
+RUN mise trust /src/mise.toml
 
 WORKDIR /src/deps/db-sync
-RUN pnpm install
-RUN pnpm build:node-adapter
+RUN mise exec -- corepack enable
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
+RUN mise exec -- pnpm prune --prod
+RUN mkdir -p /tmp/runtime-data
 
-# Final stage
-FROM node:20-slim
+FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
 WORKDIR /app
+LABEL org.opencontainers.image.description="Self-hosted Logseq Sync Server image (db-sync node adapter)"
 
-# Copy built files
-COPY --from=builder /src/deps/db-sync/worker/dist/node-adapter.js .
-COPY --from=builder /src/deps/db-sync/package.json .
-COPY --from=builder /src/deps/db-sync/node_modules ./node_modules
+COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/package.json /app/package.json
+COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/node_modules /app/node_modules
+COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/worker /app/worker
+COPY --chown=nonroot:nonroot --from=build /tmp/runtime-data /app/data
 
-# Environment defaults
-ENV DB_SYNC_PORT=3000
-ENV DB_SYNC_DATA_DIR=/data
+ENV DB_SYNC_PORT=8787
+ENV DB_SYNC_DATA_DIR=/app/data
 ENV DB_SYNC_STORAGE_DRIVER=sqlite
 ENV DB_SYNC_ASSETS_DRIVER=filesystem
+ENV DB_SYNC_LOG_LEVEL=info
 
-# Bypassing Cognito if secret key is provided
-# This is a bit of a hack: if DB_SYNC_ALLOW_UNVERIFIED_JWT_CLAIMS is true,
-# the client can send any JWT. We'll rely on the user knowing this.
+# Bypassing Cognito
 ENV DB_SYNC_ALLOW_UNVERIFIED_JWT_CLAIMS=true
 
-EXPOSE 3000
-CMD ["node", "node-adapter.js"]
+USER nonroot:nonroot
+EXPOSE 8787
+
+CMD ["worker/dist/node-adapter.js"]

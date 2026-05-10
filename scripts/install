@@ -45,9 +45,10 @@ port=$(ynh_find_port --port=3000)
 # CONFIGURE DOCKER-COMPOSE
 #=================================================
 
-# Copy docker-compose.yml and Dockerfile to the app directory
+# Copy docker-compose.yml, Dockerfile and mise.toml to the app directory
 cp ../docker-compose.yml "/var/www/$app/docker-compose.yml"
 cp ../Dockerfile "/var/www/$app/Dockerfile"
+cp ../mise.toml "/var/www/$app/mise.toml"
 
 # Create .env file for docker-compose
 allow_unverified="false"
@@ -58,6 +59,7 @@ fi
 cat > "/var/www/$app/.env" <<EOF
 DATA_DIR=$data_dir
 PORT=$port
+DOMAIN=$domain
 ALLOW_UNVERIFIED=$allow_unverified
 OIDC_ISSUER=
 OIDC_CLIENT_ID=
@@ -72,7 +74,7 @@ EOF
 #=================================================
 
 ynh_print_info --message="Starting Logseq Sync Server via Docker..."
-(cd "/var/www/$app" && docker-compose up -d)
+(cd "/var/www/$app" && docker-compose up -d --build)
 
 #=================================================
 # CONFIGURE NGINX
@@ -80,8 +82,9 @@ ynh_print_info --message="Starting Logseq Sync Server via Docker..."
 
 ynh_add_nginx_config
 
-# Replace the secret key placeholder in the final config
+# Replace placeholders in the final config
 ynh_replace_string "__SECRET_KEY__" "$secret_key" "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_replace_string "__DOMAIN__" "$domain" "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # STORE SETTINGS
