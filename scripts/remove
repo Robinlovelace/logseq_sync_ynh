@@ -11,10 +11,10 @@ source /usr/share/yunohost/helpers
 # LOAD SETTINGS
 #=================================================
 
-export app=$YNH_APP_INSTANCE_NAME
+app=$YNH_APP_INSTANCE_NAME
 
-export domain=$(ynh_app_setting_get "$app" domain)
-export path_url=$(ynh_app_setting_get "$app" path)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
 
 #=================================================
 # STOP AND REMOVE DOCKER CONTAINER
@@ -40,7 +40,7 @@ rm -rf "/var/www/$app"
 #=================================================
 
 if [[ -n "$domain" ]]; then
-    ynh_webpath_unregister --domain="$domain" --path_url="$path_url"
+    ynh_webpath_unregister --app=$app --domain=$domain --path_url=$path_url
 fi
 
 #=================================================
