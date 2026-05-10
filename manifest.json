@@ -19,9 +19,11 @@
         "yunohost": ">= 11.2",
         "architectures": "all",
         "ram": {
+            "build": "256MB",
             "runtime": "512MB"
         },
         "disk": {
+            "build": "1GB",
             "runtime": "1GB"
         }
     },
