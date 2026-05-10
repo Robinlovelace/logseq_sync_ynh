@@ -5,11 +5,10 @@ FROM node:20-slim AS builder
 RUN apt-get update && apt-get install -y git curl default-jdk-headless
 RUN npm install -g pnpm
 
-# Clone Logseq (we use a specific commit or master)
+# Clone Logseq and build db-sync node adapter
 WORKDIR /src
 RUN git clone --depth 1 https://github.com/logseq/logseq.git .
 
-# Build db-sync node adapter
 WORKDIR /src/deps/db-sync
 RUN pnpm install
 RUN pnpm build:node-adapter
@@ -21,6 +20,7 @@ WORKDIR /app
 # Copy built files
 COPY --from=builder /src/deps/db-sync/worker/dist/node-adapter.js .
 COPY --from=builder /src/deps/db-sync/package.json .
+COPY --from=builder /src/deps/db-sync/node_modules ./node_modules
 
 # Environment defaults
 ENV DB_SYNC_PORT=3000
