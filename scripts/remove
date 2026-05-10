@@ -39,7 +39,9 @@ rm -rf "/var/www/$app"
 # UNREGISTER WEB PATH
 #=================================================
 
-ynh_webpath_unregister --domain="$domain" --path="$path"
+if [[ -n "$domain" ]]; then
+    ynh_app_unregister_urls --domain="$domain" --path="$path"
+fi
 
 #=================================================
 # END OF SCRIPT
