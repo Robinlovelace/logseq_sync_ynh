@@ -19,12 +19,12 @@
         "yunohost": ">= 11.2",
         "architectures": "all",
         "ram": {
-            "build": "256MB",
-            "runtime": "512MB"
+            "build": "256M",
+            "runtime": "512M"
         },
         "disk": {
-            "build": "1GB",
-            "runtime": "1GB"
+            "build": "1G",
+            "runtime": "1G"
         }
     },
     "categories": ["office", "synchronization"],
