@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#=================================================
+# APP REMOVAL SCRIPT
+#=================================================
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path=$(ynh_app_setting_get --app=$app --key=path)
+
+#=================================================
+# STOP AND REMOVE DOCKER CONTAINER
+#=================================================
+
+ynh_print_info --message="Stopping and removing Logseq Sync Server via Docker..."
+(cd "/var/www/$app" && docker-compose down)
+
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
+
+ynh_remove_nginx_config
+
+#=================================================
+# REMOVE APP DIRECTORY
+#=================================================
+
+rm -rf "/var/www/$app"
+
+#=================================================
+# UNREGISTER WEB PATH
+#=================================================
+
+ynh_webpath_unregister --domain="$domain" --path="$path"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Removal of $app successful"

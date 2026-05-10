@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#=================================================
+# APP BACKUP SCRIPT
+#=================================================
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+#=================================================
+# BACKUP DATA DIRECTORY
+#=================================================
+
+ynh_print_info --message="Backing up Logseq Sync Server data..."
+ynh_backup "/var/www/$app"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Backup of $app successful"

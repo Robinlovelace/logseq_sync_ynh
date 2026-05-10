@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#=================================================
+# APP RESTORATION SCRIPT
+#=================================================
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+#=================================================
+# RESTORE DATA DIRECTORY
+#=================================================
+
+ynh_print_info --message="Restoring Logseq Sync Server data..."
+ynh_restore_file "/var/www/$app"
+
+#=================================================
+# RESTART DOCKER CONTAINER
+#=================================================
+
+ynh_print_info --message="Restarting Logseq Sync Server via Docker..."
+(cd "/var/www/$app" && docker-compose up -d)
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Restoration of $app successful"

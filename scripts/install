@@ -1,0 +1,96 @@
+#!/bin/bash
+
+#=================================================
+# APP INSTALLATION SCRIPT
+#=================================================
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$1
+path=$2
+is_public=$3
+auth_provider=$4
+secret_key=$5
+
+#=================================================
+# CHECK IF DOMAIN/PATH ARE AVAILABLE
+#=================================================
+
+ynh_setup_source_path "$path"
+ynh_webpath_register --domain="$domain" --path="$path"
+
+#=================================================
+# PREPARE DATA DIRECTORY
+#=================================================
+
+data_dir="/var/www/$app/data"
+mkdir -p "$data_dir"
+# Ensure the directory is writable by the docker container user (usually 1000 or root)
+chown -R 1000:1000 "$data_dir"
+chmod -R 775 "$data_dir"
+
+#=================================================
+# FIND A FREE PORT
+#=================================================
+
+port=$(ynh_find_port --port=3000)
+
+#=================================================
+# CONFIGURE DOCKER-COMPOSE
+#=================================================
+
+# Copy docker-compose.yml to the app directory
+cp ../docker-compose.yml "/var/www/$app/docker-compose.yml"
+
+# Create .env file for docker-compose
+cat > "/var/www/$app/.env" <<EOF
+AUTH_PROVIDER=$auth_provider
+SECRET_KEY=$secret_key
+DATA_DIR=$data_dir
+PORT=$port
+EOF
+
+# If OIDC is selected, we might need more info, but for now we'll assume the user
+# will configure it or we use a default YunoHost OIDC provider if available.
+# TODO: Integrate with YunoHost OIDC app if installed
+
+#=================================================
+# START DOCKER CONTAINER
+#=================================================
+
+ynh_print_info --message="Starting Logseq Sync Server via Docker..."
+(cd "/var/www/$app" && docker-compose up -d)
+
+#=================================================
+# CONFIGURE NGINX
+#=================================================
+
+ynh_add_nginx_config
+
+#=================================================
+# STORE SETTINGS
+#=================================================
+
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path
+ynh_app_setting_set --app=$app --key=port --value=$port
+ynh_app_setting_set --app=$app --key=auth_provider --value=$auth_provider
+
+#=================================================
+# RELOAD SERVICES
+#=================================================
+
+systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Installation of $app successful"

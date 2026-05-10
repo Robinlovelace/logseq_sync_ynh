@@ -1,0 +1,19 @@
+version: '3'
+services:
+  logseq-sync:
+    image: logseq/logseq-sync-server:latest
+    container_name: logseq_sync
+    restart: always
+    environment:
+      - PORT=3000
+      - AUTH_PROVIDER=${AUTH_PROVIDER}
+      - SECRET_KEY=${SECRET_KEY}
+      - OIDC_ISSUER=${OIDC_ISSUER}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - DB_PATH=/data/logseq.db
+      - LOG_PATH=/data/sync.log
+    volumes:
+      - ${DATA_DIR}:/data
+    ports:
+      - ${PORT}:3000
