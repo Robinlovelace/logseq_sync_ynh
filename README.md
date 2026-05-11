@@ -39,11 +39,31 @@ To connect your Logseq desktop client to this server:
 3.  Enter your sync server URL: `https://sync.yourdomain.tld`.
 4.  Authenticate using your chosen method.
 
-## Android/iOS Setup
+## Client Setup (Mobile & Desktop)
 
-The Logseq DB Beta app allows setting a "Custom Sync Server" in the settings. Enter your URL and credentials there.
+The Logseq DB Beta app allows setting a "Custom Sync Server" in the settings.
+
+1.  **Sync Server URL:** Enter `https://syncls.lovelaces.org/?secret=testing123`.
+2.  **Login:** If the app shows a "Login" button, click it. It will hit a dummy endpoint and should automatically mark you as logged in.
+
+## Troubleshooting & Community Tips
+
+### 1. Disable Encryption (Recommended for Beta)
+Community members report that **encryption currently breaks synchronization** on Android and sometimes Desktop. 
+- **Advice:** When creating or uploading your graph, **do not enable encryption** for now if you need mobile sync. 
+- Existing encrypted graphs may fail to load with "Enter remote password" loops.
+
+### 2. Asset Sync (Images/PDFs)
+Asset sync is now working in recent builds. This package builds from the `master` branch, which includes the latest fixes for assets. If assets aren't showing up, ensure your client is updated to the latest DB Beta version.
+
+### 3. "Downloading Forever" / Cached Keys
+If your client gets stuck "Downloading" or "Preparing snapshot":
+- Logseq may be using cached RSA keys from the official server.
+- **Fix:** Try clearing your app cache, or delete and re-import the graph into the DB client.
 
 ## Development
 
+Built on the excellent prior work by [yshalsager/logseq-selfhost](https://github.com/yshalsager/logseq-selfhost).
 This package is maintained by [robinlovelace](https://github.com/robinlovelace).
 Contributions are welcome!
+

@@ -9,9 +9,10 @@ services:
       - DB_SYNC_DATA_DIR=/app/data
       - DB_SYNC_BASE_URL=https://${DOMAIN}
       - DB_SYNC_ALLOW_UNVERIFIED_JWT_CLAIMS=${ALLOW_UNVERIFIED}
-      # For OIDC support, user can set these manually in .env
-      - COGNITO_ISSUER=${OIDC_ISSUER}
-      - COGNITO_CLIENT_ID=${OIDC_CLIENT_ID}
+      # Use official Logseq IDs to satisfy the client's built-in expectations
+      - COGNITO_ISSUER=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_dtagLnju8
+      - COGNITO_CLIENT_ID=69cs1lgme7p8kbgld8n5kseii6
+      - COGNITO_JWKS_URL=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_dtagLnju8/.well-known/jwks.json
     volumes:
       - ${DATA_DIR}:/app/data
     ports:
